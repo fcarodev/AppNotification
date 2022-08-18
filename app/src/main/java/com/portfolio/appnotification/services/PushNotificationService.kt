@@ -1,10 +1,15 @@
 package com.portfolio.appnotification.services
 
 import android.util.Log
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.orhanobut.hawk.Hawk
+import com.portfolio.appnotification.model.NotificationPush
+import com.portfolio.appnotification.utils.decodeBase64
+import com.portfolio.appnotification.utils.encodeBase64
 
 class PushNotificationService : FirebaseMessagingService() {
 
@@ -16,13 +21,8 @@ class PushNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(p0: RemoteMessage) {
         super.onMessageReceived(p0)
 
-        Log.d("MainActivity", p0.messageId!!)
-        //val a = p0.data.toDataClass<NotificationPush>()
-        Log.d("MainActivity", Gson().toJson(p0.data.getValue("actionButton")).replace("\\",""))
-        Log.d("MainActivity", Gson().toJson(p0.data.getValue("assetUrl")))
-
-        //Hawk.put("noti",p0.data)
-        //Log.d("MainActivity", Gson().toJson(Hawk.get("noti")))
-
+        val obj = p0.data.getValue("encode")
+        val person: NotificationPush =  jacksonObjectMapper().readValue(obj.decodeBase64())
+        Log.d("MainActivity", Gson().toJson(person))
     }
 }
